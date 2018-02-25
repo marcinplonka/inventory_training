@@ -5,9 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 import pl.com.bottega.inventory.domain.Product;
 import pl.com.bottega.inventory.domain.commands.AddProductCommand;
 import pl.com.bottega.inventory.domain.commands.Command;
-import pl.com.bottega.inventory.domain.commands.Validatable;
 import pl.com.bottega.inventory.domain.repositories.ProductRepository;
-import pl.com.bottega.inventory.infrastructure.PurchaseMaker;
 
 @Component
 public class AddProductHandler implements Handler<AddProductCommand, Void> {
@@ -19,9 +17,14 @@ public class AddProductHandler implements Handler<AddProductCommand, Void> {
     }
 
     @Override
-    @Transactional
     public Void handle(AddProductCommand command) {
-        productRepository.save(new Product(command));
+        Product current = new Product(command);
+        if(productRepository.skuIsPresent(current.getSkuCode())) {
+            Product updated = current.getIncreased(current);
+            productRepository.merge(updated);
+        }else {
+            productRepository.save(current);
+        }
         return null;
     }
 

@@ -9,12 +9,12 @@ public interface ProductRepository {
 
     void save(Product product);
 
+    void merge(Product product);
+
 
     Map<String, Long>  getUnprocessables(Map<String, Long> products);
 
-    boolean isPresent(String skuCode);
+    boolean skuIsPresent(String skuCode);
 
-    Optional<Product> get(String skuCode);
-
-    Product orElseUpdate(Optional<Product> productOptional, Product product);
+    Optional<Product> getBySkuCode(String skuCode);
 }

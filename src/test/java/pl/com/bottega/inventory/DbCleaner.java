@@ -17,6 +17,7 @@ public class DbCleaner {
 	@Transactional
 	public void clean() {
 		entityManager.createNativeQuery(TRUNCATE_SCHEMA_QUERY).executeUpdate();
+		entityManager.close();
 	}
 
 }

@@ -1,8 +1,6 @@
 package pl.com.bottega.inventory.domain.commands;
 
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -11,7 +9,6 @@ public interface Validatable {
 
     void validate(ValidationErrors errors);
     @Component
-    @Scope("singleton")
     class ValidationErrors {
 
         private Map<String, Set<String>> errors = new HashMap<>();
@@ -41,11 +38,6 @@ public interface Validatable {
     }
 
     default void validatePresenceOf(Object value, String name, ValidationErrors errors) {
-        if(value == null)
-            errors.add(name, "can't be blank");
-    }
-
-    default void validate(Object value, String name, ValidationErrors errors) {
         if(value == null)
             errors.add(name, "can't be blank");
     }
