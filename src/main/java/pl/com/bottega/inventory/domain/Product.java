@@ -41,11 +41,11 @@ public class Product {
         this.amount = amount;
     }
 
-    public void decreaseAmount(Long value) {
-        this.amount -= value;
+    public Product getDecreased(Product other) {
+        return new Product(skuCode, amount - other.amount);
     }
 
-    public void updateAmount(Long value) {
-        this.amount += value;
+    public Product getIncreased(Product other) {
+        return new Product(skuCode, amount + other.amount);
     }
 }

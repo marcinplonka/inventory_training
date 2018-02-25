@@ -3,9 +3,12 @@ package pl.com.bottega.inventory.infrastructure;
 import org.springframework.stereotype.Component;
 import pl.com.bottega.inventory.api.dtos.PurchaseProductResponseDto;
 import pl.com.bottega.inventory.domain.Product;
+import pl.com.bottega.inventory.domain.commands.InvalidCommandException;
 import pl.com.bottega.inventory.domain.commands.PurchaseProductCommand;
 import pl.com.bottega.inventory.domain.commands.Validatable;
 import pl.com.bottega.inventory.domain.repositories.ProductRepository;
+
+import javax.transaction.Transactional;
 import java.util.Map;
 
 @Component
@@ -21,8 +24,9 @@ public class PurchaseMaker {
 
     public void validatePresenceInRepo(PurchaseProductCommand command) {
         for (String skuCode : command.getProducts().keySet()) {
-            if(!repository.isPresent(skuCode))
+            if(!repository.skuIsPresent(skuCode)) {
                 errors.add(skuCode, "no such sku");
+            }
         }
     }
 
@@ -33,20 +37,22 @@ public class PurchaseMaker {
         success = unprocessables.isEmpty();
 
         if (success) {
-            this.updateProducts(command.getProducts());
+            decreaseProductsAmount(command.getProducts());
             return new PurchaseProductResponseDto(success, command.getProducts());
-
         }
         else {
             return new PurchaseProductResponseDto(success, unprocessables);
         }
     }
 
-    private void updateProducts(Map<String, Long> products) {
+    @Transactional
+    void decreaseProductsAmount(Map<String, Long> products) {
         for (String skuCode : products.keySet()) {
-            Product product = repository.get(skuCode).get();
-            product.decreaseAmount(products.get(skuCode));
-            repository.save(product);
+            Product current = new Product(skuCode, products.get(skuCode));
+            if(repository.skuIsPresent(skuCode)) {
+                Product updated = repository.getBySkuCode(skuCode).get().getDecreased(current);
+                repository.merge(updated);
+            }
         }
     }
 }

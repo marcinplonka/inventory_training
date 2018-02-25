@@ -2,7 +2,7 @@ package pl.com.bottega.inventory.infrastructure;
 
 import org.springframework.stereotype.Component;
 import pl.com.bottega.inventory.domain.Product;
-import pl.com.bottega.inventory.domain.commands.AddProductCommand;
+import pl.com.bottega.inventory.domain.commands.InvalidCommandException;
 import pl.com.bottega.inventory.domain.repositories.ProductRepository;
 
 import javax.persistence.EntityManager;
@@ -19,19 +19,16 @@ public class InMemoryProductRepository implements ProductRepository {
     private EntityManager em;
 
 
-
     @Override
     @Transactional
     public void save(Product product) {
-        if (isPresent(product.getSkuCode())) {
-            product.updateAmount(em.find(Product.class, product.getSkuCode()).getAmount());
-            em.merge(product);
-            em.flush();
-        }
-        else {
-            em.persist(product);
-            em.flush();
-        }
+        em.persist(product);
+    }
+
+    @Override
+    @Transactional
+    public void merge(Product product) {
+        em.merge(product);
     }
 
 
@@ -39,7 +36,8 @@ public class InMemoryProductRepository implements ProductRepository {
     public Map<String, Long> getUnprocessables(Map<String, Long> products) {
         Map<String, Long> unprocessables = new HashMap<>();
         for (String skuCode : products.keySet()) {
-            if(em.find(Product.class, skuCode).getAmount() < products.get(skuCode)) {
+            Product current = em.find(Product.class, skuCode);
+            if (current != null && em.find(Product.class, skuCode).getAmount() < products.get(skuCode)) {
                 unprocessables.put(skuCode, products.get(skuCode));
             }
         }
@@ -47,29 +45,12 @@ public class InMemoryProductRepository implements ProductRepository {
     }
 
     @Override
-    public boolean isPresent(String skuCode) {
-        return this.get(skuCode).isPresent();
+    public boolean skuIsPresent(String skuCode) {
+        return getBySkuCode(skuCode).isPresent();
     }
 
     @Override
-    public Optional<Product> get(String id) {
-        return Optional.ofNullable(em.find(Product.class, id));
-    }
-
-
-
-
-
-    @Override
-    public Product orElseUpdate(Optional<Product> skuCodeOptional, Product product) {
-
-        if(skuCodeOptional.isPresent()) {
-            Long newAmount = product.getAmount() + skuCodeOptional.get().getAmount();
-            product.setAmount(newAmount);
-            return product;
-        }
-        else {
-            return product;
-        }
+    public Optional<Product> getBySkuCode(String skuCode) {
+        return Optional.ofNullable(em.find(Product.class, skuCode));
     }
 }

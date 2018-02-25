@@ -20,16 +20,8 @@ public class CommandGateway {
     }
 
     public <T> T execute(Command command) {
-        validate(command);
         Handler handler = handlerFor(command);
         return (T) handler.handle(command);
-    }
-
-    private void validate(Command command) {
-        Validatable.ValidationErrors validationErrors = new Validatable.ValidationErrors();
-        command.validate(validationErrors);
-        if(validationErrors.any())
-            throw new InvalidCommandException(validationErrors);
     }
 
     private Handler handlerFor(Command command) {
