@@ -16,5 +16,5 @@ public interface ProductRepository {
 
     Optional<Product> get(String skuCode);
 
-    Product orElseUpdate(Optional<Product> skuCodeOptional, Product product);
+    Product orElseUpdate(Optional<Product> productOptional, Product product);
 }

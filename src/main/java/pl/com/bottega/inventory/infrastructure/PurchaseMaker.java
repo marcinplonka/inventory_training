@@ -22,7 +22,7 @@ public class PurchaseMaker {
     public void validatePresenceInRepo(PurchaseProductCommand command) {
         for (String skuCode : command.getProducts().keySet()) {
             if(!repository.isPresent(skuCode))
-                errors.add("skuCode", "no such sku");
+                errors.add(skuCode, "no such sku");
         }
     }
 

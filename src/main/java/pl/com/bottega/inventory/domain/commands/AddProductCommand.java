@@ -8,8 +8,10 @@ public class AddProductCommand implements Validatable, Command {
 
     @Override
     public void validate(ValidationErrors errors) {
-        validatePresenceOf(skuCode, "SkuCode", errors);
-        validateAmount(amount, "amount", errors);
+        validatePresenceOf(skuCode, "skuCode", errors);
+        validatePresenceOf(amount, "amount", errors);
+        if (amount != null)
+            validateAmount(amount, "amount", errors);
     }
 
     public AddProductCommand() {

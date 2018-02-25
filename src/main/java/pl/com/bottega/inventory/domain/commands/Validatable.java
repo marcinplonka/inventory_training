@@ -51,7 +51,7 @@ public interface Validatable {
     }
 
     default void validateAmount(Long amount, String field, ValidationErrors errors) {
-        if (amount < 1 || amount > 1000) {
+        if (amount < 1 || amount > 999) {
             errors.add(field,"must be between 1 and 999");
         }
     }

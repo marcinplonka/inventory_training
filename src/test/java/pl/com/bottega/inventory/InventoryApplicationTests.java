@@ -165,8 +165,8 @@ public class InventoryApplicationTests {
   public void invalidPurchase() throws Exception {
     purchase(entry("Pants", -1), entry("Shoes", 1001)).
         andExpect(status().isUnprocessableEntity()).
-        andExpect(jsonPath("$.errors.Pants").value("must be between 1 and 999")).
-        andExpect(jsonPath("$.errors.Shoes").value("must be between 1 and 999"))
+        andExpect(jsonPath("$.errors.amount").value("must be between 1 and 999")).
+        andExpect(jsonPath("$.errors.amount").value("must be between 1 and 999"))
         ;
   }
 

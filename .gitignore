@@ -1,3 +1,5 @@
 .idea
 target
 *.iml
+/src/main/java/pl/com/bottega/inventory/misc/
+/src/test/java/pl/com/bottega/inventory/misc/

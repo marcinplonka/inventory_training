@@ -8,6 +8,8 @@ public class PurchaseProductCommand implements Validatable, Command {
 
     @Override
     public void validate(ValidationErrors errors) {
+        if (products.isEmpty())
+            errors.add("skus", "are required");
         for (String skuCode : products.keySet())
         {
             validatePresenceOf(skuCode, "skuCode", errors);

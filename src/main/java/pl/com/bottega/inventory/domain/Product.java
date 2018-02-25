@@ -44,4 +44,8 @@ public class Product {
     public void decreaseAmount(Long value) {
         this.amount -= value;
     }
+
+    public void updateAmount(Long value) {
+        this.amount += value;
+    }
 }

@@ -23,11 +23,14 @@ public class InMemoryProductRepository implements ProductRepository {
     @Override
     @Transactional
     public void save(Product product) {
-        if (this.isPresent(product.getSkuCode())) {
+        if (isPresent(product.getSkuCode())) {
+            product.updateAmount(em.find(Product.class, product.getSkuCode()).getAmount());
             em.merge(product);
+            em.flush();
         }
         else {
             em.persist(product);
+            em.flush();
         }
     }
 
